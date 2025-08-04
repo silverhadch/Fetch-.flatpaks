@@ -17,12 +17,16 @@ jobs:
           sudo useradd -m builder
           sudo chown -R builder:builder /home/builder
 
-      - name: Run Flatpak commands as unprivileged user
+      - name: Download and bundle Flatpak as builder
         run: |
-          sudo -u builder flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          sudo -u builder flatpak --user install --noninteractive --download-only flathub org.kde.Sdk//6.9
-          mkdir -p /home/builder/bundle
-          sudo -u builder flatpak build-bundle /home/builder/.local/share/flatpak/repo /home/builder/bundle/org.kde.Sdk-6.9-x86_64.flatpak org.kde.Sdk 6.9
+          sudo --login --user builder bash <<'EOF'
+          set -e
+          flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak --user install --noninteractive --download-only flathub org.kde.Sdk//6.9
+          mkdir -p ~/bundle
+          flatpak build-bundle ~/.local/share/flatpak/repo ~/bundle/org.kde.Sdk-6.9-x86_64.flatpak org.kde.Sdk 6.9
+          EOF
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
