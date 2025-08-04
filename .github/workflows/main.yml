@@ -12,21 +12,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak
 
-      - name: Add Flathub Remote
+      - name: Create unprivileged user
         run: |
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo useradd -m builder
+          sudo chown -R builder:builder /home/builder
 
-      - name: Download org.kde.Sdk 6.9
+      - name: Run Flatpak commands as unprivileged user
         run: |
-          flatpak install --noninteractive --download-only flathub org.kde.Sdk//6.9
-
-      - name: Create Flatpak Bundle
-        run: |
-          mkdir -p bundle
-          flatpak build-bundle ~/.local/share/flatpak/repo bundle/org.kde.Sdk-6.9-x86_64.flatpak org.kde.Sdk 6.9
-
+          sudo -u builder flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo -u builder flatpak --user install --noninteractive --download-only flathub org.kde.Sdk//6.9
+          mkdir -p /home/builder/bundle
+          sudo -u builder flatpak build-bundle /home/builder/.local/share/flatpak/repo /home/builder/bundle/org.kde.Sdk-6.9-x86_64.flatpak org.kde.Sdk 6.9
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: org.kde.Sdk-6.9-x86_64
-          path: bundle/org.kde.Sdk-6.9-x86_64.flatpak
+          path: /home/builder/bundle/org.kde.Sdk-6.9-x86_64.flatpak
