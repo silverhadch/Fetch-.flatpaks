@@ -32,3 +32,4 @@ jobs:
         with:
           name: org.kde.Sdk-6.9-x86_64
           path: /home/builder/bundle/org.kde.Sdk-6.9-x86_64.flatpak
+
