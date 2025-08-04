@@ -22,7 +22,7 @@ jobs:
           sudo --login --user builder bash <<'EOF'
           set -e
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak --user install --noninteractive --download-only flathub org.kde.Sdk//6.9
+          flatpak --user install --noninteractive flathub org.kde.Sdk//6.9
           mkdir -p ~/bundle
           flatpak build-bundle ~/.local/share/flatpak/repo ~/bundle/org.kde.Sdk-6.9-x86_64.flatpak org.kde.Sdk 6.9
           EOF
